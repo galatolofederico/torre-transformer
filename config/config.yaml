@@ -1,6 +1,7 @@
 dataset:
   filename: ${hydra:runtime.cwd}/dataset/data.csv
-
+  window: 72
+  
   channels:
     date: Date time
     data:
@@ -41,6 +42,8 @@ dataset:
       dates:
         - from: 01/01/1993
           to: 31/12/1993
+        - from: 01/01/1996
+          to: 31/12/1997
     test:
       dates:
         - from: 01/01/1993
