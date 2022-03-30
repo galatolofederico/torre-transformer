@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+import flatdict
 from torch.utils.data import DataLoader
 import pytorch_lightning
 from x_transformers.x_transformers import AttentionLayers, AbsolutePositionalEmbedding
@@ -7,6 +8,7 @@ import hydra
 import os
 
 from src.dataset import get_dataset
+from src.utils import regression_metrics
 
 class Transformer(torch.nn.Module):
     def __init__(
@@ -60,12 +62,14 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         transformer_decoder_heads,
         transformer_decoder_dropout,
         input_channels,
+        channel_names,
         seq_len,
         lr
     ):
         super(TransformerRegressor, self).__init__()
         self.save_hyperparameters()
         self.lr = lr
+        self.channel_names = channel_names
 
         self.decoder = Transformer(
             dim = transformer_decoder_dim,
@@ -85,6 +89,27 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
 
         self.training_step = lambda batch, batch_nb: self.step("train", batch, batch_nb)
         self.validation_step = lambda batch, batch_nb: self.step("validation", batch, batch_nb)
+
+    def compute_metrics(self, trues, targets, metrics_fn, step=-1):
+        ret = dict(mean=dict())
+
+        for channel_i, channel_name in enumerate(self.channel_names):
+            channel_trues = trues[:, :, channel_i]
+            channel_targets = targets[:, :, channel_i]
+            channel_mask = ~torch.isnan(channel_targets)
+            channel_trues = channel_trues[channel_mask]
+            channel_targets = channel_targets[channel_mask]
+            
+            channel_metrics = metrics_fn(channel_targets.detach().cpu().numpy(), channel_trues.detach().cpu().numpy())
+            ret[channel_name] = channel_metrics
+
+        for metric_name in channel_metrics.keys():
+            metric_values = []
+            for channel_name in self.channel_names:
+                metric_values.append(ret[channel_name][metric_name])
+            ret["mean"][metric_name] = sum(metric_values) / len(metric_values)
+        
+        return ret
 
     def forward(self, X):
         embeddings = self.input_embedding(X)
@@ -108,12 +133,23 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
 
         loss = F.mse_loss(loss_predictions, loss_targets)
         
+        self.log(f"{step}/loss", loss.item(), prog_bar=True)
+        
+        last_metrics = self.compute_metrics(
+            trues=predictions,
+            targets=target_batch,
+            metrics_fn=regression_metrics,
+            step=-1
+        )
+
+        log_metrics = {f"{step}/last": last_metrics}
+        flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
+        self.log_dict(flat_metrics)
+
         return loss
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.lr)
-
-
 
 @hydra.main(config_path=None, config_name="config")
 def main(cfg):
@@ -129,6 +165,7 @@ def main(cfg):
         transformer_decoder_depth=cfg.model.transformer.decoder_depth,
         transformer_decoder_heads=cfg.model.transformer.decoder_heads,
         transformer_decoder_dropout=cfg.model.transformer.decoder_dropout,
+        channel_names=ds.channel_names,
         input_channels=len(cfg.dataset.channels.data),
         seq_len=cfg.dataset.window,
         lr=cfg.train.lr,
