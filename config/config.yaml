@@ -1,5 +1,5 @@
 dataset:
-  filename: ${hydra:runtime.cwd}/dataset/data.csv
+  filename: ${hydra:runtime.cwd}/dataset/data_nan.csv
   window: 72
   
   channels:
@@ -48,3 +48,14 @@ dataset:
       dates:
         - from: 01/01/1993
           to: 31/12/1993
+
+train:
+  batch_size: 32
+  lr: 1e-3
+
+model:
+  transformer:
+    decoder_dim: 128
+    decoder_depth: 8
+    decoder_heads: 6
+    decoder_dropout: 0
