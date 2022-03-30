@@ -64,12 +64,14 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         input_channels,
         channel_names,
         seq_len,
-        lr
+        lr,
+        log_metrics_each
     ):
         super(TransformerRegressor, self).__init__()
         self.save_hyperparameters()
         self.lr = lr
         self.channel_names = channel_names
+        self.log_metrics_each = log_metrics_each
 
         self.decoder = Transformer(
             dim = transformer_decoder_dim,
@@ -135,16 +137,17 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         
         self.log(f"{step}/loss", loss.item(), prog_bar=True)
         
-        last_metrics = self.compute_metrics(
-            trues=predictions,
-            targets=target_batch,
-            metrics_fn=regression_metrics,
-            step=-1
-        )
+        if self.global_step % self.log_metrics_each == 0:
+            last_metrics = self.compute_metrics(
+                trues=predictions,
+                targets=target_batch,
+                metrics_fn=regression_metrics,
+                step=-1
+            )
 
-        log_metrics = {f"{step}/last": last_metrics}
-        flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
-        self.log_dict(flat_metrics)
+            log_metrics = {f"{step}/last": last_metrics}
+            flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
+            self.log_dict(flat_metrics)
 
         return loss
 
@@ -169,6 +172,7 @@ def main(cfg):
         input_channels=len(cfg.dataset.channels.data),
         seq_len=cfg.dataset.window,
         lr=cfg.train.lr,
+        log_metrics_each=cfg.log.metrics_each
     )
 
     for i, elem in enumerate(dl):
