@@ -52,6 +52,9 @@ dataset:
 train:
   batch_size: 32
   lr: 1e-3
+  seed: -1
+  gpus: 1
+  wandb: false
 
 
 log:
@@ -63,3 +66,7 @@ model:
     decoder_depth: 8
     decoder_heads: 6
     decoder_dropout: 0
+
+wandb:
+  entity: mlpi
+  project: torre-transformer
