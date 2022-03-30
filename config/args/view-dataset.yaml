@@ -1,0 +1,5 @@
+defaults:
+  - common
+
+subplots: [3, 3]
+figsize: [10, 10]

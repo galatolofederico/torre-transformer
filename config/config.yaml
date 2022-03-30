@@ -1,5 +1,9 @@
+defaults:
+  - _self_
+  - args: common
+
 dataset:
-  filename: ${hydra:runtime.cwd}/dataset/data_nan.csv
+  filename: ${hydra:runtime.cwd}/dataset/data.csv
   window: 72
   
   channels:
