@@ -138,17 +138,17 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         
         self.log(f"{step}/loss", loss.item(), prog_bar=True)
         
-        if self.global_step % self.log_metrics_each == 0:
-            last_metrics = self.compute_metrics(
-                trues=target_batch,
-                predictions=predictions,
-                metrics_fn=regression_metrics,
-                step=-1
-            )
+        #if self.global_step % self.log_metrics_each == 0:
+        last_metrics = self.compute_metrics(
+            trues=target_batch,
+            predictions=predictions,
+            metrics_fn=regression_metrics,
+            step=-1
+        )
 
-            log_metrics = {f"{step}/last": last_metrics}
-            flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
-            self.log_dict(flat_metrics)
+        log_metrics = {f"{step}/last": last_metrics}
+        flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
+        self.log_dict(flat_metrics)
 
         return loss
 

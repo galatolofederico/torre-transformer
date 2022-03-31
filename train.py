@@ -52,6 +52,12 @@ def train(cfg):
         batch_size=cfg.train.batch_size,
         num_workers=os.cpu_count()
     )
+    validation_dataset = get_dataset(cfg, "validation")
+    validation_dataloader = DataLoader(
+        validation_dataset,
+        batch_size=cfg.validation.batch_size,
+        num_workers=os.cpu_count()
+    )
 
     model = TransformerRegressor(
         transformer_decoder_dim=cfg.model.transformer.decoder_dim,
@@ -70,11 +76,11 @@ def train(cfg):
         callbacks=callbacks,
         gpus=cfg.train.gpus,
         log_every_n_steps=1,
-        #val_check_interval=cfg.train.validation_interval,
-        #limit_val_batches=cfg.train.validation_batches
+        val_check_interval=cfg.validation.interval,
+        limit_val_batches=cfg.validation.batches
     )
     
-    trainer.fit(model, train_dataloader)
+    trainer.fit(model, train_dataloader, validation_dataloader)
 
 if __name__ == "__main__":
     train()

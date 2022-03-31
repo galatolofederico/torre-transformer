@@ -169,6 +169,10 @@ train:
   gpus: 1
   wandb: false
 
+validation:
+  batch_size: 32
+  interval: 200
+  batches: 10
 
 log:
   metrics_each: 100
