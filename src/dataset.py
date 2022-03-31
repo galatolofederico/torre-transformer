@@ -12,11 +12,20 @@ class TowerDataset(torch.utils.data.IterableDataset):
         window,
         date_channel,
         data_channels,
-        date_ranges
+        date_ranges,
+        stats=None
     ):
         self.data = pd.read_csv(filename)
         self.data[date_channel] = pd.to_datetime(self.data[date_channel])
         self.data = self.data.set_index(date_channel)
+        self.stats = None
+        if stats is not None:
+            self.stats = dict()
+            for stat in stats:
+                self.stats[stat["channel"]] = dict(
+                    mean=stat["mean"],
+                    std=stat["std"]
+                )
 
         self.window = window
         
@@ -54,20 +63,24 @@ class TowerDataset(torch.utils.data.IterableDataset):
         data = self.data[date_range["mask"]]
         i = random.randint(0, len(data)-self.window)
         data = data.iloc[i:i+self.window]
-
+        
         ret = torch.zeros(self.window, len(self.data_channels))
         for i, data_channel in enumerate(self.data_channels):
-            ret[:, i] = torch.tensor(data[data_channel].to_numpy())
+            if self.stats is not None and data_channel in self.stats:
+                ret[:, i] = (torch.tensor(data[data_channel].to_numpy()) - self.stats[data_channel]["mean"])/self.stats[data_channel]["std"]
+            else:
+                ret[:, i] = torch.tensor(data[data_channel].to_numpy())
         
         return ret
         
-def get_dataset(cfg, split):
+def get_dataset(cfg, split, use_stats=True):
     return TowerDataset(
         filename=cfg.dataset.filename,
         window=cfg.dataset.window,
         date_channel=cfg.dataset.channels.date,
         data_channels=cfg.dataset.channels.data,
-        date_ranges=cfg.dataset.splits[split].dates
+        date_ranges=cfg.dataset.splits[split].dates,
+        stats=cfg.dataset.stats if use_stats else None
     )
 
 
