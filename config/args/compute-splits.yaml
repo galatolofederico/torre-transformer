@@ -1,7 +1,11 @@
 defaults:
   - common
 
+start_date: 01/08/1993
+end_date: 01/01/2001
+
 time_splits: 3
+
 distribution:
   train: 0.8
   validation: 0.1

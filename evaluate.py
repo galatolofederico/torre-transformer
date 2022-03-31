@@ -19,6 +19,7 @@ def main(cfg):
     )
 
     model = TransformerRegressor.load_from_checkpoint(model_path)
+
     
     
 if __name__  == "__main__":

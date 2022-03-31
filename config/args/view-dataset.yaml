@@ -1,5 +1,6 @@
 defaults:
   - common
 
+dataset: train
 subplots: [3, 3]
 figsize: [10, 10]
