@@ -1,1 +1,4 @@
-samples: 100000
+defaults:
+  - common
+
+samples: 15000

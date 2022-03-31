@@ -1,0 +1,8 @@
+defaults:
+  - common
+
+time_splits: 3
+distribution:
+  train: 0.8
+  validation: 0.1
+  test: 0.1

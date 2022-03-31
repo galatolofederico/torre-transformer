@@ -3,7 +3,7 @@ defaults:
   - args: common
 
 dataset:
-  filename: ${hydra:runtime.cwd}/dataset/data.csv
+  filename: ${hydra:runtime.cwd}/dataset/preprocessed_data.csv
   window: 72
   
   channels:
@@ -42,16 +42,30 @@ dataset:
       - Irraggiamento Solare
 
   splits:
-    train:
-      dates:
-        - from: 01/01/1993
-          to: 31/12/1993
-        - from: 01/01/1994
-          to: 31/12/2001
     test:
       dates:
-        - from: 01/01/1993
-          to: 31/12/1993
+      - from: 17/06/1997
+        to: 21/11/1997
+      - from: 08/10/2001
+        to: 14/03/2002
+      - from: 29/01/2006
+        to: 30/06/2006
+    train:
+      dates:
+      - from: 01/08/1993
+        to: 09/01/1997
+      - from: 22/11/1997
+        to: 02/05/2001
+      - from: 15/03/2002
+        to: 23/08/2005
+    validation:
+      dates:
+      - from: 10/01/1997
+        to: 16/06/1997
+      - from: 03/05/2001
+        to: 07/10/2001
+      - from: 24/08/2005
+        to: 28/01/2006
 
 train:
   batch_size: 32

@@ -21,6 +21,7 @@ def main(cfg):
         channel_samples = samples[channel_name].flatten()
         channel_samples = channel_samples[~np.isnan(channel_samples)]
         stats[channel_name] = dict(
+            channel=channel_name,
             mean=channel_samples.mean(),
             std=channel_samples.std()
         )
