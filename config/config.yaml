@@ -184,6 +184,12 @@ model:
     decoder_heads: 6
     decoder_dropout: 0
 
+evaluate:
+  model: ""
+  dataset: test
+  batch_size: 32
+  batches: 200
+
 wandb:
   entity: mlpi
   project: torre-transformer

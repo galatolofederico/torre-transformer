@@ -138,7 +138,6 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         
         self.log(f"{step}/loss", loss.item(), prog_bar=True)
         
-        #if self.global_step % self.log_metrics_each == 0:
         last_metrics = self.compute_metrics(
             trues=target_batch,
             predictions=predictions,
