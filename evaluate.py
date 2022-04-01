@@ -3,6 +3,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 import pandas as pd
+import numpy as np
 import hydra
 from hydra.utils import get_original_cwd
 from tqdm import trange
@@ -28,8 +29,7 @@ def main(cfg):
     model = TransformerRegressor.load_from_checkpoint(model_path)
     model.eval()
 
-    results = list()
-
+    results = dict()
     for batch, _ in zip(dataloader, trange(0, cfg.evaluate.batches)):
         input_batch = batch[:, :-1]
         target_batch = batch[:, 1:]
@@ -47,11 +47,24 @@ def main(cfg):
             step=-1
         )
 
-        results.append(flatdict.FlatDict(last_metrics, delimiter="."))
+        for channel, metrics in last_metrics.items():
+            if channel not in results: results[channel] = dict()
+            for metric, value in metrics.items():
+                if metric not in results[channel]: results[channel][metric] = list()
+                results[channel][metric].append(value)
 
     results = pd.DataFrame(results)
-    results = results.mean(axis=0)
-    print(results)
+    mean_results = results.applymap(lambda e: np.array(e).mean())
+    std_results = results.applymap(lambda e: np.array(e).std())
+
+    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.evaluate.dataset) 
+    os.makedirs(output_folder, exist_ok=True)
     
+    mean_results.to_csv(os.path.join(output_folder, "mean.csv"))
+    std_results.to_csv(os.path.join(output_folder, "std.csv"))
+    
+    print(mean_results)
+    
+
 if __name__  == "__main__":
     main()

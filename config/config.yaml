@@ -29,6 +29,7 @@ model:
 evaluate:
   model: ""
   dataset: test
+  output_folder: ${hydra:runtime.cwd}/results
   batch_size: 32
   batches: 200
 
