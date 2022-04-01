@@ -1,5 +1,6 @@
 defaults:
   - common
 
+split: train
 samples: 15000
 use_stats: false

@@ -8,7 +8,7 @@ from src.dataset import get_dataset
 
 @hydra.main(config_path=None, config_name="config")
 def main(cfg):
-    ds = get_dataset(cfg, "train", use_stats=cfg.args.use_stats)
+    ds = get_dataset(cfg, cfg.args.split, use_stats=cfg.args.use_stats)
     samples = dict()
 
     for elem, sample in tqdm(zip(ds, range(0, cfg.args.samples)), total=cfg.args.samples):
@@ -26,6 +26,7 @@ def main(cfg):
             std=float(channel_samples.std())
         ))
     
+    print(cfg.args.split)
     print(yaml.dump(stats))
 
 if __name__  == "__main__":
