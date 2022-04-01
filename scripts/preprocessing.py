@@ -9,7 +9,6 @@ import yaml
 
 
 
-
 @hydra.main(config_path=None, config_name="config")
 def main(cfg):
 
@@ -29,7 +28,6 @@ def main(cfg):
 
     # select channels (specifyed in the config file)
     thresholds = cfg.preprocessing.thresholds
-    print(thresholds)
     keys = list(thresholds.keys())
     df = df[df.columns.intersection(keys)] 
 

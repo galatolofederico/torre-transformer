@@ -38,3 +38,108 @@ evaluate:
 wandb:
   entity: mlpi
   project: torre-transformer
+  
+preprocessing:
+  data:
+    filename: ${hydra:runtime.cwd}/dataset/data.txt
+    separator: ;
+
+  thresholds:
+    Date time:
+      - 0
+    DEFORMOMETRO INTERNO:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO SU SCALA:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.1:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO SU SCALA.1:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO SU SCALA.2:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO SU SCALA.3:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.2:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.3:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.4:
+      - -0.5
+      - 0.5
+    TEL. 0 VERT. SUD DIR. N-S:
+      - -2100
+      - 1800
+    TEL. 0 VERT. SUD DIR. E-O:
+      - -2100
+      - 1800
+    DEFORMOMETRO SULLA SCALA:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.1:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.2:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.3:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.4:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.5:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.6:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.7:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.8:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.9:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO SULLE SCALE:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.10:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.5:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO INTERNO.6:
+      - -0.5
+      - 0.5
+    DEFORMOMETRO ESTERNO.11:
+      - -0.5
+      - 0.5
+    Velocita vento istantanea:
+      - 0
+      - 45
+    Direzione vento istantanea:
+      - 0
+      - 360
+    Termometro Aria Piano 8:
+      - -10
+      - 42
+    Irraggiamento Solare:
+      - 0
+      - 1000
+
+  start_date: 1993-08-01 00:00:00
+  end_date: 2006-06-30 00:00:00
