@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import hydra
 from datetime import datetime
+import yaml
 
 class TowerDataset(torch.utils.data.IterableDataset):
     def __init__(
@@ -74,13 +75,17 @@ class TowerDataset(torch.utils.data.IterableDataset):
         return ret
         
 def get_dataset(cfg, split, use_stats=True):
+    stats = None
+    if use_stats:
+        with open(cfg.dataset.splits[split].stats, "r") as f:
+            stats = yaml.safe_load(f)
     return TowerDataset(
         filename=cfg.dataset.filename,
         window=cfg.dataset.window,
         date_channel=cfg.dataset.channels.date,
         data_channels=cfg.dataset.channels.data,
         date_ranges=cfg.dataset.splits[split].dates,
-        stats=cfg.dataset.stats if use_stats else None
+        stats=stats
     )
 
 
