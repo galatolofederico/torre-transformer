@@ -15,6 +15,7 @@ splits:
       - from: 29/09/2000
         to: 31/12/2000
   train:
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/pre.yaml
     dates:
       - from: 01/08/1993
         to: 23/07/1995
@@ -23,6 +24,7 @@ splits:
       - from: 10/07/1998
         to: 30/06/2000
   validation:
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/pre.yaml
     dates:
       - from: 24/07/1995
         to: 21/10/1995
@@ -31,6 +33,7 @@ splits:
       - from: 01/07/2000
         to: 28/09/2000
   post:
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/post.yaml
     dates:
       - from: 01/01/2002
         to: 01/01/2006
