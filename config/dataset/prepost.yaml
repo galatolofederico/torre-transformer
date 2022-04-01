@@ -1,12 +1,13 @@
 defaults:
   - channels: channels
 
+name: prepost
 filename: ${hydra:runtime.cwd}/dataset/preprocessed_data.csv
 window: 72
 
 splits:
   test:
-    stats: ${hydra:runtime.cwd}/config/dataset/stats/pre.yaml
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/train-pre.yaml
     dates:
       - from: 22/10/1995
         to: 19/01/1996
@@ -15,7 +16,7 @@ splits:
       - from: 29/09/2000
         to: 31/12/2000
   train:
-    stats: ${hydra:runtime.cwd}/config/dataset/stats/pre.yaml
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/train-pre.yaml
     dates:
       - from: 01/08/1993
         to: 23/07/1995
@@ -24,7 +25,7 @@ splits:
       - from: 10/07/1998
         to: 30/06/2000
   validation:
-    stats: ${hydra:runtime.cwd}/config/dataset/stats/pre.yaml
+    stats: ${hydra:runtime.cwd}/config/dataset/stats/train-pre.yaml
     dates:
       - from: 24/07/1995
         to: 21/10/1995
