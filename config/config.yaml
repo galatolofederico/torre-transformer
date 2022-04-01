@@ -7,9 +7,11 @@ defaults:
 train:
   batch_size: 32
   lr: 1e-3
+  steps: 2500
   seed: -1
   gpus: 1
   wandb: false
+  save_model: ""
 
 validation:
   batch_size: 32
@@ -28,7 +30,7 @@ model:
 
 evaluate:
   model: ""
-  dataset: test
+  split: test
   output_folder: ${hydra:runtime.cwd}/results
   batch_size: 32
   batches: 200

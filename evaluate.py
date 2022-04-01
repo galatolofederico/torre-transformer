@@ -19,7 +19,7 @@ def main(cfg):
     model_path = os.path.join(get_original_cwd(), cfg.evaluate.model)
     assert os.path.isfile(model_path), "you must specify a model with evaluate.model=<path-to-model>"
     
-    dataset = get_dataset(cfg, cfg.evaluate.dataset)
+    dataset = get_dataset(cfg, cfg.evaluate.split)
     dataloader = DataLoader(
         dataset,
         batch_size=cfg.evaluate.batch_size,
@@ -57,7 +57,7 @@ def main(cfg):
     mean_results = results.applymap(lambda e: np.array(e).mean())
     std_results = results.applymap(lambda e: np.array(e).std())
 
-    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.evaluate.dataset) 
+    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.dataset.name, cfg.evaluate.split) 
     os.makedirs(output_folder, exist_ok=True)
     
     mean_results.to_csv(os.path.join(output_folder, "mean.csv"))

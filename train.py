@@ -5,6 +5,7 @@ import pytorch_lightning
 from pytorch_lightning.utilities.seed import seed_everything
 from pytorch_lightning.callbacks import ModelCheckpoint, Callback
 import hydra
+from hydra.utils import get_original_cwd
 
 from src.dataset import get_dataset
 from src.model import TransformerRegressor
@@ -77,10 +78,14 @@ def train(cfg):
         gpus=cfg.train.gpus,
         log_every_n_steps=1,
         val_check_interval=cfg.validation.interval,
-        limit_val_batches=cfg.validation.batches
+        limit_val_batches=cfg.validation.batches,
+        max_steps=cfg.train.steps
     )
     
     trainer.fit(model, train_dataloader, validation_dataloader)
+
+    if cfg.train.save_model != "":
+        trainer.save_checkpoint(os.path.join(get_original_cwd(), cfg.train.save_model))
 
 if __name__ == "__main__":
     train()
