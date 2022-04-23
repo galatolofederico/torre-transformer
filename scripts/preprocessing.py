@@ -58,10 +58,11 @@ def main(cfg):
     for col in cols:
         df[col] = df[col].interpolate(method='nearest')
 
+    df['Date time'] = df.index
+
     # save processed data
     print(df.shape)
     df.to_csv(cfg.dataset.filename)
-    
 
 if __name__  == "__main__":
     main()
