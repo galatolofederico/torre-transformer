@@ -16,8 +16,8 @@ def regression_metrics(y_true, y_pred):
     )
 
 def hp_from_cfg(cfg):
-    cfg = OmegaConf.to_container(cfg)
-    return dict(flatdict.FlatDict(cfg, delimiter="."))
+    cfg = OmegaConf.to_container(cfg, resolve=True)
+    return dict(flatdict.FlatDict(cfg, delimiter="/"))
 
 
 def deep_move(data, device):

@@ -8,7 +8,7 @@ import hydra
 from hydra.utils import get_original_cwd
 
 from src.dataset import get_dataset
-from src.model import TransformerRegressor
+from src.model import TransformerRegressor, VectorAutoRegressor
 from src.utils import hp_from_cfg
 
 @hydra.main(config_path="config", config_name="config")
@@ -65,6 +65,14 @@ def train(cfg):
         transformer_decoder_depth=cfg.model.transformer.decoder_depth,
         transformer_decoder_heads=cfg.model.transformer.decoder_heads,
         transformer_decoder_dropout=cfg.model.transformer.decoder_dropout,
+        channel_names=train_dataset.channel_names,
+        input_channels=len(cfg.dataset.channels.data),
+        seq_len=cfg.dataset.window,
+        lr=cfg.train.lr,
+        log_metrics_each=cfg.log.metrics_each
+    )
+
+    model = VectorAutoRegressor(
         channel_names=train_dataset.channel_names,
         input_channels=len(cfg.dataset.channels.data),
         seq_len=cfg.dataset.window,

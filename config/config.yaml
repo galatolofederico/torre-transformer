@@ -9,7 +9,7 @@ train:
   lr: 1e-3
   steps: 2500
   seed: -1
-  gpus: 1
+  gpus: 0
   wandb: false
   save_model: ""
 

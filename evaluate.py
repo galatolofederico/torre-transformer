@@ -10,7 +10,7 @@ from tqdm import trange
 import flatdict
 
 from src.dataset import get_dataset
-from src.model import TransformerRegressor
+from src.model import TransformerRegressor, VectorAutoRegressor
 from src.utils import regression_metrics
 
 
@@ -26,7 +26,8 @@ def main(cfg):
         num_workers=os.cpu_count()
     )
 
-    model = TransformerRegressor.load_from_checkpoint(model_path)
+    #model = TransformerRegressor.load_from_checkpoint(model_path)
+    model = VectorAutoRegressor.load_from_checkpoint(model_path)
     model.eval()
 
     results = dict()

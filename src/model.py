@@ -154,6 +154,102 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.lr)
 
+
+class VectorAutoRegressor(pytorch_lightning.LightningModule):
+    def __init__(
+        self,
+        input_channels,
+        channel_names,
+        seq_len,
+        lr,
+        log_metrics_each
+    ):
+        super(VectorAutoRegressor, self).__init__()
+        self.save_hyperparameters()
+        self.input_channels = input_channels
+        self.seq_len = seq_len
+        self.lr = lr
+        self.channel_names = channel_names
+        self.log_metrics_each = log_metrics_each
+
+        input_flatted_len = input_channels * (seq_len - 1)
+        self.layer1 = torch.nn.Linear(input_flatted_len, input_flatted_len)
+
+        mask = torch.ones(input_channels, seq_len-1, seq_len-1, dtype=int)
+        mask = torch.block_diag(*mask)
+        tmp = torch.ones(input_flatted_len, input_flatted_len, dtype=int)
+        self.mask = (mask | tmp.tril()).float()
+
+        self.missing_placeholder = torch.nn.Parameter(torch.randn(1))
+
+        self.training_step = lambda batch, batch_nb: self.step("train", batch, batch_nb)
+        self.validation_step = lambda batch, batch_nb: self.step("validation", batch, batch_nb)
+
+    def compute_metrics(self, trues, predictions, metrics_fn, step=-1):
+        ret = dict(mean=dict())
+
+        for channel_i, channel_name in enumerate(self.channel_names):
+            channel_trues = trues[:, :, channel_i]
+            channel_predictions = predictions[:, :, channel_i]
+            channel_mask = ~torch.isnan(channel_trues)
+            
+            channel_trues = channel_trues[channel_mask]
+            channel_predictions = channel_predictions[channel_mask]
+            
+            channel_metrics = metrics_fn(channel_trues.detach().cpu().numpy(), channel_predictions.detach().cpu().numpy())
+            ret[channel_name] = channel_metrics
+
+        for metric_name in channel_metrics.keys():
+            metric_values = []
+            for channel_name in self.channel_names:
+                metric_values.append(ret[channel_name][metric_name])
+            ret["mean"][metric_name] = sum(metric_values) / len(metric_values)
+        
+        return ret
+
+    def forward(self, X):
+        batch = X.shape[0]
+        x_flatted = torch.flatten(X, start_dim=1)
+        self.layer1.weight.data = self.layer1.weight * self.mask
+        predictions = self.layer1(x_flatted)
+        predictions = torch.reshape(predictions, ( batch, self.seq_len - 1, self.input_channels))
+        return predictions
+    
+    def step(self, step, batch, batch_nb):
+        input_batch = batch[:, :-1]
+        target_batch = batch[:, 1:]
+
+        input_nan_mask = torch.isnan(input_batch)
+        target_nan_mask = torch.isnan(target_batch)
+
+        input_batch[input_nan_mask] = self.missing_placeholder
+        predictions = self(input_batch)
+        
+        loss_predictions = predictions[~target_nan_mask]
+        loss_targets = target_batch[~target_nan_mask]
+
+        loss = F.mse_loss(loss_predictions, loss_targets)
+        
+        self.log(f"{step}/loss", loss.item(), prog_bar=True)
+        
+        last_metrics = self.compute_metrics(
+            trues=target_batch,
+            predictions=predictions,
+            metrics_fn=regression_metrics,
+            step=-1
+        )
+
+        log_metrics = {f"{step}/last": last_metrics}
+        flat_metrics = flatdict.FlatDict(log_metrics, delimiter="/")
+        self.log_dict(flat_metrics)
+
+        return loss
+
+    def configure_optimizers(self):
+        return torch.optim.AdamW(self.parameters(), lr=self.lr)
+
+
+
 @hydra.main(config_path=None, config_name="config")
 def main(cfg):
     ds = get_dataset(cfg, "train")
@@ -163,7 +259,7 @@ def main(cfg):
         num_workers=os.cpu_count()
     )
 
-    model = TransformerRegressor(
+    model_1 = TransformerRegressor(
         transformer_decoder_dim=cfg.model.transformer.decoder_dim,
         transformer_decoder_depth=cfg.model.transformer.decoder_depth,
         transformer_decoder_heads=cfg.model.transformer.decoder_heads,
@@ -175,8 +271,16 @@ def main(cfg):
         log_metrics_each=cfg.log.metrics_each
     )
 
+    model_2 = VectorAutoRegressor(
+        channel_names=ds.channel_names,
+        input_channels=len(cfg.dataset.channels.data),
+        seq_len=cfg.dataset.window,
+        lr=cfg.train.lr,
+        log_metrics_each=cfg.log.metrics_each
+    )
+
     for i, elem in enumerate(dl):
-        loss = model.training_step(elem, i)
+        loss = model_2.training_step(elem, i)
         loss.backward()
         print(loss)
     
