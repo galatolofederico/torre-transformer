@@ -17,6 +17,7 @@ from src.utils import regression_metrics
 @hydra.main(config_path="config", config_name="config")
 def main(cfg):
     model_path = os.path.join(get_original_cwd(), cfg.evaluate.model)
+    print(model_path)
     assert os.path.isfile(model_path), "you must specify a model with evaluate.model=<path-to-model>"
     
     dataset = get_dataset(cfg, cfg.evaluate.split)
@@ -25,9 +26,10 @@ def main(cfg):
         batch_size=cfg.evaluate.batch_size,
         num_workers=os.cpu_count()
     )
-
-    #model = TransformerRegressor.load_from_checkpoint(model_path)
-    model = VectorAutoRegressor.load_from_checkpoint(model_path)
+    if cfg.architecture == 'TransformerRegressor':
+        model = TransformerRegressor.load_from_checkpoint(model_path)
+    elif cfg.architecture == 'VectorAutoRegressor':
+        model = VectorAutoRegressor.load_from_checkpoint(model_path)
     model.eval()
 
     results = dict()
@@ -58,7 +60,7 @@ def main(cfg):
     mean_results = results.applymap(lambda e: np.array(e).mean())
     std_results = results.applymap(lambda e: np.array(e).std())
 
-    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.dataset.name, cfg.evaluate.split) 
+    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.architecture, cfg.dataset.name, cfg.evaluate.split) 
     os.makedirs(output_folder, exist_ok=True)
     
     mean_results.to_csv(os.path.join(output_folder, "mean.csv"))

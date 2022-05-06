@@ -1,10 +1,20 @@
 #!/bin/sh
 
-python evaluate.py evaluate.model=./models/prepost.ckpt evaluate.split=train dataset=prepost
-python evaluate.py evaluate.model=./models/prepost.ckpt evaluate.split=validation dataset=prepost
-python evaluate.py evaluate.model=./models/prepost.ckpt evaluate.split=test dataset=prepost
-python evaluate.py evaluate.model=./models/prepost.ckpt evaluate.split=post dataset=prepost
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=train dataset=prepost architecture=VectorAutoRegressor
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=validation dataset=prepost architecture=VectorAutoRegressor
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=test dataset=prepost architecture=VectorAutoRegressor
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=post dataset=prepost architecture=VectorAutoRegressor
 
-python evaluate.py evaluate.model=./models/full.ckpt evaluate.split=train dataset=full
-python evaluate.py evaluate.model=./models/full.ckpt evaluate.split=validation dataset=full
-python evaluate.py evaluate.model=./models/full.ckpt evaluate.split=test dataset=full
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/full.ckpt evaluate.split=train dataset=full architecture=VectorAutoRegressor
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/full.ckpt evaluate.split=validation dataset=full architecture=VectorAutoRegressor
+python evaluate.py evaluate.model=./models/VectorAutoRegressor/full.ckpt evaluate.split=test dataset=full architecture=VectorAutoRegressor
+
+
+python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=train dataset=prepost architecture=TransformerRegressor
+python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=validation dataset=prepost architecture=TransformerRegressor
+python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=test dataset=prepost architecture=TransformerRegressor
+python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=post dataset=prepost architecture=TransformerRegressor
+
+python evaluate.py evaluate.model=./models/TransformerRegressor/full.ckpt evaluate.split=train dataset=full architecture=TransformerRegressor
+python evaluate.py evaluate.model=./models/TransformerRegressor/full.ckpt evaluate.split=validation dataset=full architecture=TransformerRegressor
+python evaluate.py evaluate.model=./models/TransformerRegressor/full.ckpt evaluate.split=test dataset=full architecture=TransformerRegressor

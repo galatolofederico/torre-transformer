@@ -3,6 +3,7 @@ defaults:
   - args: common
   - dataset: prepost
 
+architecture: TransformerRegressor
 
 train:
   batch_size: 32

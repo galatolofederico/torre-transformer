@@ -6,6 +6,7 @@ import pytorch_lightning
 from x_transformers.x_transformers import AttentionLayers, AbsolutePositionalEmbedding
 import hydra
 import os
+from einops import rearrange
 
 from src.dataset import get_dataset
 from src.utils import regression_metrics
@@ -180,6 +181,12 @@ class VectorAutoRegressor(pytorch_lightning.LightningModule):
         tmp = torch.ones(input_flatted_len, input_flatted_len, dtype=int)
         self.mask = (mask | tmp.tril()).float()
 
+        self.layers = torch.nn.ModuleList()
+
+        for i in range(0, 71):
+            self.layers.append(torch.nn.Linear(31*(i+1), 31))
+        
+
         self.missing_placeholder = torch.nn.Parameter(torch.randn(1))
 
         self.training_step = lambda batch, batch_nb: self.step("train", batch, batch_nb)
@@ -208,13 +215,23 @@ class VectorAutoRegressor(pytorch_lightning.LightningModule):
         return ret
 
     def forward(self, X):
+        '''
+        print(X.shape)
         batch = X.shape[0]
         x_flatted = torch.flatten(X, start_dim=1)
         self.layer1.weight.data = self.layer1.weight * self.mask
         predictions = self.layer1(x_flatted)
         predictions = torch.reshape(predictions, ( batch, self.seq_len - 1, self.input_channels))
         return predictions
-    
+        '''
+        outputs = []
+        for i, layer in enumerate(self.layers):
+            Xi = rearrange(X[:, :(i+1), :], "b t d -> b (t d)")
+            outputs.append(layer(Xi))
+        outputs = torch.stack(outputs, dim=1)
+
+        return outputs
+            
     def step(self, step, batch, batch_nb):
         input_batch = batch[:, :-1]
         target_batch = batch[:, 1:]

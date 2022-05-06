@@ -60,25 +60,26 @@ def train(cfg):
         num_workers=os.cpu_count()
     )
 
-    model = TransformerRegressor(
-        transformer_decoder_dim=cfg.model.transformer.decoder_dim,
-        transformer_decoder_depth=cfg.model.transformer.decoder_depth,
-        transformer_decoder_heads=cfg.model.transformer.decoder_heads,
-        transformer_decoder_dropout=cfg.model.transformer.decoder_dropout,
-        channel_names=train_dataset.channel_names,
-        input_channels=len(cfg.dataset.channels.data),
-        seq_len=cfg.dataset.window,
-        lr=cfg.train.lr,
-        log_metrics_each=cfg.log.metrics_each
-    )
-
-    model = VectorAutoRegressor(
-        channel_names=train_dataset.channel_names,
-        input_channels=len(cfg.dataset.channels.data),
-        seq_len=cfg.dataset.window,
-        lr=cfg.train.lr,
-        log_metrics_each=cfg.log.metrics_each
-    )
+    if cfg.architecture == 'TransformerRegressor':
+        model = TransformerRegressor(
+            transformer_decoder_dim=cfg.model.transformer.decoder_dim,
+            transformer_decoder_depth=cfg.model.transformer.decoder_depth,
+            transformer_decoder_heads=cfg.model.transformer.decoder_heads,
+            transformer_decoder_dropout=cfg.model.transformer.decoder_dropout,
+            channel_names=train_dataset.channel_names,
+            input_channels=len(cfg.dataset.channels.data),
+            seq_len=cfg.dataset.window,
+            lr=cfg.train.lr,
+            log_metrics_each=cfg.log.metrics_each
+        )
+    elif cfg.architecture == 'VectorAutoRegressor':
+        model = VectorAutoRegressor(
+            channel_names=train_dataset.channel_names,
+            input_channels=len(cfg.dataset.channels.data),
+            seq_len=cfg.dataset.window,
+            lr=cfg.train.lr,
+            log_metrics_each=cfg.log.metrics_each
+        )
 
     trainer = pytorch_lightning.Trainer(
         logger=loggers,
@@ -92,8 +93,10 @@ def train(cfg):
     
     trainer.fit(model, train_dataloader, validation_dataloader)
 
+    trainer.save_checkpoint(os.path.join(get_original_cwd(), cfg.train.save_model))
+    '''
     if cfg.train.save_model != "":
         trainer.save_checkpoint(os.path.join(get_original_cwd(), cfg.train.save_model))
-
+    '''
 if __name__ == "__main__":
     train()
