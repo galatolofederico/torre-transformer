@@ -7,8 +7,13 @@ import io
 import PIL
 
 def regression_metrics(y_true, y_pred):
+    max_var = 4*y_true.std()
+    mae = float(sklearn.metrics.mean_absolute_error(y_true, y_pred))
+
     return dict(
-        mean_absolute_error = float(sklearn.metrics.mean_absolute_error(y_true, y_pred)),
+        max_var = max_var,
+        mean_relative_error = max_var / mae,
+        mean_absolute_error = mae,
         mean_squared_error = float(sklearn.metrics.mean_squared_error(y_true, y_pred)),
         d2_tweedie_score = float(sklearn.metrics.d2_tweedie_score(y_true, y_pred)),
         r2_score = float(sklearn.metrics.r2_score(y_true, y_pred)),
