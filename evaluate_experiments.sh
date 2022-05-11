@@ -1,5 +1,11 @@
 #!/bin/sh
 
+#python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=train dataset=prepost architecture=VectorAutoRegressor
+#python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=post dataset=prepost architecture=VectorAutoRegressor
+#
+#python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=train dataset=prepost architecture=TransformerRegressor
+#python evaluate.py evaluate.model=./models/TransformerRegressor/prepost.ckpt evaluate.split=post dataset=prepost architecture=TransformerRegressor
+
 python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=train dataset=prepost architecture=VectorAutoRegressor
 python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=validation dataset=prepost architecture=VectorAutoRegressor
 python evaluate.py evaluate.model=./models/VectorAutoRegressor/prepost.ckpt evaluate.split=test dataset=prepost architecture=VectorAutoRegressor
