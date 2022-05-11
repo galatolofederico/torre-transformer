@@ -230,6 +230,8 @@ class VectorAutoRegressor(pytorch_lightning.LightningModule):
             outputs.append(layer(Xi))
         outputs = torch.stack(outputs, dim=1)
 
+        # [x1 x2 x3 x4...] -> [y1 y2 y3]
+        # [x1 x2 x3 x4...] -> [0 0 y3]
         return outputs
             
     def step(self, step, batch, batch_nb):
