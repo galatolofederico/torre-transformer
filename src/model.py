@@ -97,8 +97,8 @@ class TransformerRegressor(pytorch_lightning.LightningModule):
         ret = dict(mean=dict())
 
         for channel_i, channel_name in enumerate(self.channel_names):
-            channel_trues = trues[:, :, channel_i]
-            channel_predictions = predictions[:, :, channel_i]
+            channel_trues = trues[:, step, channel_i]
+            channel_predictions = predictions[:, step, channel_i]
             channel_mask = ~torch.isnan(channel_trues)
             
             channel_trues = channel_trues[channel_mask]
@@ -196,8 +196,8 @@ class VectorAutoRegressor(pytorch_lightning.LightningModule):
         ret = dict(mean=dict())
 
         for channel_i, channel_name in enumerate(self.channel_names):
-            channel_trues = trues[:, :, channel_i]
-            channel_predictions = predictions[:, :, channel_i]
+            channel_trues = trues[:, step, channel_i]
+            channel_predictions = predictions[:, step, channel_i]
             channel_mask = ~torch.isnan(channel_trues)
             
             channel_trues = channel_trues[channel_mask]
