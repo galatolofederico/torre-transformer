@@ -39,6 +39,7 @@ evaluate:
 wandb:
   entity: mlpi
   project: torre-transformer
+  tag: ""
   
 preprocessing:
   data:
