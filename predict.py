@@ -8,6 +8,7 @@ import hydra
 from hydra.utils import get_original_cwd
 from tqdm import trange, tqdm
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from src.dataset import get_dataset
 from src.model import TransformerRegressor, VectorAutoRegressor
@@ -76,6 +77,20 @@ def main(cfg):
 
             plt.savefig(os.path.join(batch_output_folder, f"{channel_name}.png"))
             plt.close()
+
+            padded_inputs = np.zeros(xp)
+            padded_predictions = np.zeros(xp)
+            padded_actuals = np.zeros(xp)
+            
+            padded_inputs[:xi] = channel_inputs
+            padded_predictions[xi:xp] = channel_predictions
+            padded_actuals[xi:xp] = channel_actuals
+            
+            pd.DataFrame(dict(
+                inputs=padded_inputs,
+                predictions=padded_predictions,
+                actuals=padded_actuals
+            )).to_csv(os.path.join(batch_output_folder, f"{channel_name}.csv"))
     
 
 if __name__  == "__main__":
