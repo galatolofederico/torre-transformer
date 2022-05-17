@@ -14,6 +14,7 @@ class TowerDataset(torch.utils.data.IterableDataset):
         date_channel,
         data_channels,
         date_ranges,
+        seed=42,
         stats=None
     ):
         self.data = pd.read_csv(filename)
@@ -46,6 +47,8 @@ class TowerDataset(torch.utils.data.IterableDataset):
         total_values = sum([len(self.data[date_range["mask"]]) for date_range in self.date_ranges])
         for i, date_range in enumerate(self.date_ranges):
             self.date_ranges[i]["weight"] = len(self.data[date_range["mask"]])/total_values
+
+        self.rng = np.random.default_rng(seed)
     
     @property
     def channel_names(self):
@@ -55,14 +58,14 @@ class TowerDataset(torch.utils.data.IterableDataset):
         return self
 
     def __next__(self):
-        date_range = np.random.choice(
+        date_range = self.rng.choice(
             self.date_ranges,
             1,
             p=[date_range["weight"] for date_range in self.date_ranges]
         )[0]
 
         data = self.data[date_range["mask"]]
-        i = random.randint(0, len(data)-self.window)
+        i = self.rng.integers(0, len(data)-self.window)
         data = data.iloc[i:i+self.window]
         
         ret = torch.zeros(self.window, len(self.data_channels))
