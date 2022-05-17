@@ -5,6 +5,10 @@ TAG=testfull1
 
 mkdir -p ./models
 
+python train.py train.save_model=./models/LSTMRegressor/prepost.ckpt dataset=prepost train.wandb=$WANDB wandb.tag=$TAG architecture=LSTMRegressor
+python train.py train.save_model=./models/LSTMRegressor/full.ckpt dataset=full train.wandb=$WANDB wandb.tag=$TAG architecture=LSTMRegressor
+python train.py train.save_model=./models/LSTMRegressor/post.ckpt dataset=post train.wandb=$WANDB wandb.tag=$TAG architecture=LSTMRegressor
+
 python train.py train.save_model=./models/VectorAutoRegressor/prepost.ckpt dataset=prepost train.wandb=$WANDB wandb.tag=$TAG architecture=VectorAutoRegressor
 python train.py train.save_model=./models/VectorAutoRegressor/full.ckpt dataset=full train.wandb=$WANDB wandb.tag=$TAG architecture=VectorAutoRegressor
 python train.py train.save_model=./models/VectorAutoRegressor/post.ckpt dataset=post train.wandb=$WANDB wandb.tag=$TAG architecture=VectorAutoRegressor

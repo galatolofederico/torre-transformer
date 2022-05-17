@@ -55,6 +55,7 @@ class TowerModel(pytorch_lightning.LightningModule):
         return ret
 
     def step(self, step, batch, batch_nb):
+        
         input_batch = batch[:, :-1]
         target_batch = batch[:, 1:]
 
@@ -244,7 +245,75 @@ class VectorAutoRegressor(TowerModel):
             
 
 
+class LSTMRegressor(TowerModel):
+    def __init__(
+        self,
+        hidden_size, 
+        num_layers,
+        input_channels,
+        channel_names,
+        seq_len,
+        lr,
+        log_metrics_each
+    ):
 
+        super(LSTMRegressor, self).__init__(
+            input_channels,
+            channel_names,
+            seq_len,
+            lr,
+            log_metrics_each
+        )
+        
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+        
+        self.lstm = torch.nn.LSTM(
+            input_size=input_channels, 
+            hidden_size=hidden_size,
+            num_layers=num_layers, 
+            batch_first=True
+        )
+
+        self.linear = torch.nn.Linear(hidden_size, input_channels)
+        
+    def forward(self, x):
+        h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        output, (h_out, _) = self.lstm(x, (h_0, c_0))
+        pred = self.linear(output)
+
+        return pred
+
+
+
+
+@hydra.main(config_path=None, config_name="config")
+def main(cfg):
+    ds = get_dataset(cfg, "train")
+    dl = DataLoader(
+        ds,
+        batch_size=cfg.train.batch_size,
+        num_workers=os.cpu_count()
+    )
+
+    model_2 = LSTMRegressor( 
+        hidden_size = cfg.model.lstm.hidden_size, 
+        num_layers = cfg.model.lstm.num_layers,
+        channel_names=ds.channel_names,
+        input_channels=len(cfg.dataset.channels.data),
+        seq_len=cfg.dataset.window,
+        lr=cfg.train.lr,
+        log_metrics_each=cfg.log.metrics_each)
+
+    for i, elem in enumerate(dl):
+        loss = model_2.training_step(elem, i)
+        loss.backward()
+        print(loss)
+
+
+
+'''
 @hydra.main(config_path=None, config_name="config")
 def main(cfg):
     ds = get_dataset(cfg, "train")
@@ -274,13 +343,11 @@ def main(cfg):
         log_metrics_each=cfg.log.metrics_each
     )
 
-    print(model_2.step)
-
-    '''
     for i, elem in enumerate(dl):
         loss = model_2.training_step(elem, i)
         loss.backward()
         print(loss)
-    '''
+'''        
+
 if __name__  == "__main__":
     main()

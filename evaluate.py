@@ -10,7 +10,7 @@ from tqdm import trange
 import flatdict
 
 from src.dataset import get_dataset
-from src.model import TransformerRegressor, VectorAutoRegressor
+from src.model import TransformerRegressor, VectorAutoRegressor, LSTMRegressor
 from src.utils import regression_metrics
 
 
@@ -30,6 +30,8 @@ def main(cfg):
         model = TransformerRegressor.load_from_checkpoint(model_path)
     elif cfg.architecture == 'VectorAutoRegressor':
         model = VectorAutoRegressor.load_from_checkpoint(model_path)
+    elif cfg.architecture == 'LSTMRegressor':
+        model = LSTMRegressor.load_from_checkpoint(model_path)
     model.eval()
 
     results = dict()
