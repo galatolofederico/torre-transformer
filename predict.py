@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from src.dataset import get_dataset
-from src.model import TransformerRegressor, VectorAutoRegressor
+from src.model import TransformerRegressor, VectorAutoRegressor, LSTMRegressor
 from src.utils import regression_metrics
 
 
@@ -31,10 +31,12 @@ def main(cfg):
         batch_size=cfg.predict.batch_size,
         num_workers=os.cpu_count()
     )
-    if cfg.architecture == "TransformerRegressor":
+    if cfg.architecture == 'TransformerRegressor':
         model = TransformerRegressor.load_from_checkpoint(model_path)
-    elif cfg.architecture == "VectorAutoRegressor":
+    elif cfg.architecture == 'VectorAutoRegressor':
         model = VectorAutoRegressor.load_from_checkpoint(model_path)
+    elif cfg.architecture == 'LSTMRegressor':
+        model = LSTMRegressor.load_from_checkpoint(model_path)
     model.eval()
 
     batch = next(iter(dataloader))

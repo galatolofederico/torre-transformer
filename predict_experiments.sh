@@ -14,6 +14,23 @@ python predict.py predict.model=./models/VectorAutoRegressor/post.ckpt predict.s
 python predict.py predict.model=./models/VectorAutoRegressor/post.ckpt predict.split=test dataset=post architecture=VectorAutoRegressor
 
 
+
+python predict.py predict.model=./models/LSTMRegressor/prepost.ckpt predict.split=train dataset=prepost architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/prepost.ckpt predict.split=validation dataset=prepost architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/prepost.ckpt predict.split=test dataset=prepost architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/prepost.ckpt predict.split=post dataset=prepost architecture=LSTMRegressor
+
+python predict.py predict.model=./models/LSTMRegressor/full.ckpt predict.split=train dataset=full architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/full.ckpt predict.split=validation dataset=full architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/full.ckpt predict.split=test dataset=full architecture=LSTMRegressor
+
+python predict.py predict.model=./models/LSTMRegressor/post.ckpt predict.split=train dataset=post architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/post.ckpt predict.split=validation dataset=post architecture=LSTMRegressor
+python predict.py predict.model=./models/LSTMRegressor/post.ckpt predict.split=test dataset=post architecture=LSTMRegressor
+
+
+
+
 python predict.py predict.model=./models/TransformerRegressor/prepost.ckpt predict.split=train dataset=prepost architecture=TransformerRegressor
 python predict.py predict.model=./models/TransformerRegressor/prepost.ckpt predict.split=validation dataset=prepost architecture=TransformerRegressor
 python predict.py predict.model=./models/TransformerRegressor/prepost.ckpt predict.split=test dataset=prepost architecture=TransformerRegressor
