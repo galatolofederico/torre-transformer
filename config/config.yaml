@@ -28,6 +28,9 @@ model:
     decoder_depth: 8
     decoder_heads: 6
     decoder_dropout: 0
+  lstm:
+    hidden_size: 128 
+    num_layers: 2
 
 evaluate:
   model: ""

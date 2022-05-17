@@ -8,7 +8,7 @@ import hydra
 from hydra.utils import get_original_cwd
 
 from src.dataset import get_dataset
-from src.model import TransformerRegressor, VectorAutoRegressor
+from src.model import TransformerRegressor, VectorAutoRegressor, LSTMRegressor
 from src.utils import hp_from_cfg
 
 @hydra.main(config_path="config", config_name="config")
@@ -74,6 +74,16 @@ def train(cfg):
         )
     elif cfg.architecture == 'VectorAutoRegressor':
         model = VectorAutoRegressor(
+            channel_names=train_dataset.channel_names,
+            input_channels=len(cfg.dataset.channels.data),
+            seq_len=cfg.dataset.window,
+            lr=cfg.train.lr,
+            log_metrics_each=cfg.log.metrics_each
+        )
+    elif cfg.architecture == 'LSTMRegressor':
+        model = LSTMRegressor(
+            hidden_size = cfg.model.lstm.hidden_size, 
+            num_layers = cfg.model.lstm.num_layers,
             channel_names=train_dataset.channel_names,
             input_channels=len(cfg.dataset.channels.data),
             seq_len=cfg.dataset.window,

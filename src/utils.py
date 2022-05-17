@@ -7,8 +7,6 @@ import io
 import PIL
 
 def regression_metrics(y_true, y_pred):
-    #https://stats.stackexchange.com/questions/86708/how-to-calculate-relative-error-when-the-true-value-is-zero
-
     return dict(
         mean_rpd = np.mean(np.abs(y_true - y_pred)/((np.abs(y_true) + np.abs(y_pred))/2)),
         mean_absolute_error = float(sklearn.metrics.mean_absolute_error(y_true, y_pred)),
