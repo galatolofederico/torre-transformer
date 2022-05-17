@@ -39,6 +39,13 @@ evaluate:
   batch_size: 32
   batches: 200
 
+predict:
+  window: 72
+  model: ""
+  split: test
+  output_folder: ${hydra:runtime.cwd}/plots
+  batch_size: 10
+
 wandb:
   entity: mlpi
   project: torre-transformer
