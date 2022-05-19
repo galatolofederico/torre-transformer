@@ -5,10 +5,15 @@ import flatdict
 import torch
 import io
 import PIL
+import math
 
 def regression_metrics(y_true, y_pred):
+
+    rdp_vector = np.abs(y_true - y_pred)/((np.abs(y_true) + np.abs(y_pred))/2)
+
     return dict(
-        mean_rpd = np.mean(np.abs(y_true - y_pred)/((np.abs(y_true) + np.abs(y_pred))/2)),
+        mean_rpd = np.mean(rdp_vector),
+        confidence_interval_rpd = .95 * np.std(rdp_vector) / math.sqrt(71),
         mean_absolute_error = float(sklearn.metrics.mean_absolute_error(y_true, y_pred)),
         mean_squared_error = float(sklearn.metrics.mean_squared_error(y_true, y_pred)),
         d2_tweedie_score = float(sklearn.metrics.d2_tweedie_score(y_true, y_pred)),
