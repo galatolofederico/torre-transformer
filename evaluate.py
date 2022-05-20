@@ -11,7 +11,7 @@ import flatdict
 
 from src.dataset import get_dataset
 from src.model import TransformerRegressor, VectorAutoRegressor, LSTMRegressor
-from src.utils import regression_metrics
+from src.utils import regression_metrics, confidence_interval
 
 
 @hydra.main(config_path="config", config_name="config")
@@ -61,14 +61,14 @@ def main(cfg):
     results = pd.DataFrame(results)
     mean_results = results.applymap(lambda e: np.array(e).mean())
     std_results = results.applymap(lambda e: np.array(e).std())
+    ci_results = results.applymap(lambda e: confidence_interval(np.array(e)))
 
     output_folder = os.path.join(cfg.evaluate.output_folder, cfg.architecture, cfg.dataset.name, cfg.evaluate.split) 
     os.makedirs(output_folder, exist_ok=True)
     
     mean_results.to_csv(os.path.join(output_folder, "mean.csv"))
     std_results.to_csv(os.path.join(output_folder, "std.csv"))
-    
-    print(mean_results)
+    ci_results.to_csv(os.path.join(output_folder, "ci.csv"))
     
 
 if __name__  == "__main__":

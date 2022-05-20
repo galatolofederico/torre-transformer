@@ -1,4 +1,5 @@
 import sklearn.metrics
+import scipy.stats
 import numpy as np
 from omegaconf import DictConfig, OmegaConf
 import flatdict
@@ -7,13 +8,19 @@ import io
 import PIL
 import math
 
+def confidence_interval(arr, confidence=.95):
+    if np.isnan(arr).any(): print("Warning skipping some NaNs")
+    data = arr[~np.isnan(arr)]
+    se = scipy.stats.sem(data)
+    h = se * scipy.stats.t.ppf((1 + confidence) / 2., len(data)-1)
+    return h
+
 def regression_metrics(y_true, y_pred):
 
     rdp_vector = np.abs(y_true - y_pred)/((np.abs(y_true) + np.abs(y_pred))/2)
 
     return dict(
         mean_rpd = np.mean(rdp_vector),
-        confidence_interval_rpd = .95 * np.std(rdp_vector) / math.sqrt(71),
         mean_absolute_error = float(sklearn.metrics.mean_absolute_error(y_true, y_pred)),
         mean_squared_error = float(sklearn.metrics.mean_squared_error(y_true, y_pred)),
         d2_tweedie_score = float(sklearn.metrics.d2_tweedie_score(y_true, y_pred)),
