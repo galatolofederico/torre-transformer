@@ -69,6 +69,41 @@ def main(cfg):
     mean_results.to_csv(os.path.join(output_folder, "mean.csv"))
     std_results.to_csv(os.path.join(output_folder, "std.csv"))
     ci_results.to_csv(os.path.join(output_folder, "ci.csv"))
+
+
+    # metriche aggregate
+
+    results_def = results.loc[:, results.columns.str.startswith('DEF')]
+    results_tel = results.loc[:, results.columns.str.startswith('TEL')]
+    results_def_tel = results.loc[:, results.columns.str.startswith('DEF') | results.columns.str.startswith('TEL')]
+
+    mean_results_def = results_def.applymap(lambda e: np.array(e).mean())
+    std_results_def = results_def.applymap(lambda e: np.array(e).std())
+    ci_results_def = results_def.applymap(lambda e: confidence_interval(np.array(e)))
+
+    mean_results_tel = results_tel.applymap(lambda e: np.array(e).mean())
+    std_results_tel = results_tel.applymap(lambda e: np.array(e).std())
+    ci_results_tel = results_tel.applymap(lambda e: confidence_interval(np.array(e)))
+
+    mean_results_def_tel = results_def_tel.applymap(lambda e: np.array(e).mean())
+    std_results_def_tel = results_def_tel.applymap(lambda e: np.array(e).std())
+    ci_results_def_tel = results_def_tel.applymap(lambda e: confidence_interval(np.array(e)))
+
+    output_folder = os.path.join(cfg.evaluate.output_folder, cfg.architecture, cfg.dataset.name, cfg.evaluate.split, 'aggregate_metric') 
+    os.makedirs(output_folder, exist_ok=True)
+
+    mean_results_def.to_csv(os.path.join(output_folder, "mean_def.csv"))
+    std_results_def.to_csv(os.path.join(output_folder, "std_def.csv"))
+    ci_results_def.to_csv(os.path.join(output_folder, "ci_def.csv"))
+
+    mean_results_tel.to_csv(os.path.join(output_folder, "mean_tel.csv"))
+    std_results_tel.to_csv(os.path.join(output_folder, "std_tel.csv"))
+    ci_results_tel.to_csv(os.path.join(output_folder, "ci_tel.csv"))
+
+    mean_results_def_tel.to_csv(os.path.join(output_folder, "mean_def_tel.csv"))
+    std_results_def_tel.to_csv(os.path.join(output_folder, "std_def_tel.csv"))
+    ci_results_def_tel.to_csv(os.path.join(output_folder, "ci_def_tel.csv"))
+
     
 
 if __name__  == "__main__":
