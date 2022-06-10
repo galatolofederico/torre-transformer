@@ -20,14 +20,17 @@ def regression_metrics(y_true, y_pred):
     rdp_vector = np.abs(y_true - y_pred)/((np.abs(y_true) + np.abs(y_pred))/2)
 
     return dict(
+        chan_mean = np.mean(y_true),
+        pred_mean = np.mean(y_pred),
+        chan_std = y_true.std(),
+        pred_std = y_pred.std(),
         mean_rpd = np.mean(rdp_vector),
+        std_rpd = rdp_vector.std(),
         mean_absolute_error = float(sklearn.metrics.mean_absolute_error(y_true, y_pred)),
         mean_squared_error = float(sklearn.metrics.mean_squared_error(y_true, y_pred)),
         d2_tweedie_score = float(sklearn.metrics.d2_tweedie_score(y_true, y_pred)),
         r2_score = float(sklearn.metrics.r2_score(y_true, y_pred)),
-        explained_variance_score = float(sklearn.metrics.explained_variance_score(y_true, y_pred)),
-        chan_std = y_true.std(),
-        pred_std = y_pred.std()
+        explained_variance_score = float(sklearn.metrics.explained_variance_score(y_true, y_pred))
     )
 
 def hp_from_cfg(cfg):
